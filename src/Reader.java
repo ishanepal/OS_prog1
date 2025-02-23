@@ -2,8 +2,8 @@ import java.util.Random;
 import java.util.concurrent.Semaphore;
 
 public class Reader implements Runnable{
-    static Shared Shared_obj;
-    static Semaphore rmutex, M1, M2, M3;
+    private static Shared Shared_obj;
+    private static Semaphore rmutex, M1, M2, M3;
     Random rand = new Random();
     int time_to_sleep = rand.nextInt(21);
 
@@ -18,7 +18,7 @@ public class Reader implements Runnable{
     @Override
     public void run() {
         try{
-            System.out.println("READER " + Thread.currentThread().getName() + " is ENTERING READER CODE");
+            System.out.println("READER " + Thread.currentThread().getName() + " is ENTERING READER CODE\n");
             //Entry Section
             M3.acquire();
             M1.acquire();
@@ -33,19 +33,18 @@ public class Reader implements Runnable{
             M3.release();
 
             //Critical Section
-            System.out.println("READER " + Thread.currentThread().getName() + " is in CRITICAL SECTION performing READ");
-            System.out.println("READER " + Thread.currentThread().getName() + " is reading for " + time_to_sleep + " milliseconds");
+            System.out.println("READER " + Thread.currentThread().getName() + " is in CRITICAL SECTION performing READ\n");
+            System.out.println("READER " + Thread.currentThread().getName() + " is reading for " + time_to_sleep + " milliseconds\n");
             Thread.sleep(time_to_sleep);
 
             //Exit Section
-            System.out.println("READER " + Thread.currentThread().getName() + " is now EXITING");
             rmutex.acquire();
             Shared_obj.decReadCount();
             if (Shared_obj.getReadCount() == 0){
                 M2.release();
             }
             rmutex.release();
-
+            System.out.println("READER " + Thread.currentThread().getName() + " is now EXITING\n");
         } catch (InterruptedException e) {
             System.out.println("Interrupted Exception");
         }
